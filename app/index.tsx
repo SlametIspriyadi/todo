@@ -7,14 +7,18 @@ import {
   Image, 
   TouchableOpacity, 
   TextInput,
-  
-  
+  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {Ionicons} from '@expo/vector-icons';
 import Checkbox from "expo-checkbox";
 
 
+type TodoType = {
+  id: number;
+  task: string;
+  completed: boolean;
+};
 
 export default function Index() {
 
@@ -79,25 +83,38 @@ export default function Index() {
    <FlatList 
       data={todoData}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.todoItem} >
-          <View style={styles.checkboxContainer} >
-            <Checkbox
-            value={item.completed}
-            onValueChange={() => setChecked(!isChecked)}
-          />
-          <Text>{item.task}</Text>
-          </View>   
-          <TouchableOpacity onPress={() => {alert('Delete Clicked!')}} >
-            <Ionicons name="trash" size={20} color="red" />
-          </TouchableOpacity>    
-        </View>
-      )}
+      renderItem={({ item }) => (<ToDoItem todo={item} />)}
     />
 
+    <KeyboardAvoidingView style={styles.addTodoContainer} behavior="padding" keyboardVerticalOffset={20} >
+      <TextInput placeholder="Add new todo" style={styles.textInput}/>
+      <TouchableOpacity onPress={() => {alert('Add Clicked!')}} >  
+        <Ionicons name="add-circle" size={50} color="green" />
+      </TouchableOpacity>
+      
+    </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const ToDoItem = ({ todo }: { todo: TodoType })  => (
+  <View style={styles.todoItemStyle} >
+      <View style={styles.checkboxContainer} >
+        <Checkbox
+          value={todo.completed}
+          // onValueChange={() => setChecked(!isChecked)}
+          color={todo.completed ? 'green' : undefined}
+        />
+        <Text 
+          style={[styles.todoText, 
+          todo.completed &&{textDecorationLine: "line-through"}]}>{todo.task}
+        </Text>
+      </View>   
+        <TouchableOpacity onPress={() => {alert('Delete Clicked!')}} >
+          <Ionicons name="trash" size={20} color="red" />
+        </TouchableOpacity>    
+  </View>
+);
 
 const styles = StyleSheet.create({
   container : {
@@ -112,7 +129,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     marginBottom: 20,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 10,
     flexDirection: 'row',
@@ -125,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     // backgroundColor: 'blue',
   },
-  todoItem: {
+  todoItemStyle: {
     backgroundColor: '#ffffff',
     padding: 20,
     borderRadius: 10,
@@ -136,6 +153,23 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+  },
+  todoText: {
+    fontSize: 16,
+  },
+  textInput: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    flex: 1,
+    padding: 20,
+    fontSize: 16,
+  },
+  addTodoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
     gap: 10,
   },
 })
